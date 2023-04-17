@@ -29,11 +29,18 @@ def _encode_file(img):
 @st.cache_data
 def _encode_numpy(img):
     pil_img = Image.fromarray(img)
+    
+    # Convert image to RGB mode if it's RGBA
+    if pil_img.mode == "RGBA":
+        pil_img = pil_img.convert("RGB")
+        
     buffer = io.BytesIO()
-    pil_img.save(buffer, format="JPEG")
+    
+    # Save the image with optimization and progressive options
+    pil_img.save(buffer, format="JPEG", optimize=True, progressive=True)
+    
     encoded = base64.b64encode(buffer.getvalue()).decode()
     return f"data:image/jpeg;base64, {encoded}"
-
 
 def image_select(
     label: str,
